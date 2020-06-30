@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SpaDay.Models;
-
+using SpaDay.ViewModel;
 
 namespace SpaDay.Controllers
 {public class UserController : Controller
@@ -18,25 +19,37 @@ namespace SpaDay.Controllers
         // GET: /user/add
         public IActionResult Add()
         {
-            return View();
+            AddUserViewModel addUserViewModel = new AddUserViewModel();
+            return View(addUserViewModel);
         }
 
-        // POST: /user/add
+        // POST: /user
         [HttpPost("/user/add")]
-        public IActionResult Create(User user, string verify)
-        {
-            if(user.Password == verify)
+        public IActionResult SubmitAddUserForm(AddUserViewModel addUserViewModel)
+           {
+            if (ModelState.IsValid)
             {
-                ViewBag.user = user;
-                return View("Index");
+                if (addUserViewModel.Password == addUserViewModel.Verify)
+                {
+                    User newUser = new User
+                    {
+                        Username = addUserViewModel.Username,
+                        Password = addUserViewModel.Password,
+                        Email = addUserViewModel.Email
+                    }; 
+                    return View("Index", newUser);
+                }
+                else
+                {
+                    ViewBag.error = "Passwords do not match! Try again!";
+                    return View("Add", addUserViewModel);
+                }
             }
-            else
-            {
-                ViewBag.user = user;
-                ViewBag.error = "Passwords didn't match !";
-                return View("Add");
-            }
+            return View("Add", addUserViewModel);
+
+
         }
+        
     }
 
 }

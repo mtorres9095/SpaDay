@@ -27,6 +27,7 @@ namespace SpaDay.Controllers
             ViewBag.client = newClient;
             return View();
         }
+        
     }
 
 }
